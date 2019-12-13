@@ -1,0 +1,120 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Testing the physical layer of EPT from Ingenico</title>
+<script type="text/javascript" src="./protocol-helpers.class.js" id="concert"></script>
+<script>
+var conn = new WebSocket("ws://localhost:8001");
+conn.binaryType = 'blob';
+conn.onopen = function () {
+    console.log("Connection opened");
+}
+conn.onclose = function () {
+    console.log("Connection closed")
+}
+conn.onmessage = function (evt) {
+    read(evt.data, function(result){
+        console.info("Received:", ProtocolHelpers.Physical.decode(result[0]));
+        if ( result[1] ) try {
+            console.info('Message:', ProtocolHelpers.Physical.getMessage(result), '→ A ack is advised here');
+        } catch ( e ) {
+            console.error('Incorrect frame:', '→ A', ProtocolHelpers.Physical.decode(e), 'is advised here.');
+        }
+    });
+    //conn.close();
+}
+conn.onerror = function () {
+    console.error("Error")
+}
+
+var send = function(bin){
+    var code = bin.length > 1
+        ? bin.charCodeAt(0)
+        : bin
+    ;
+    console.info('Sending:', ProtocolHelpers.Physical.decode(code), bin);
+    conn.send(new Blob([bin], {type: 'application/octet-binary'}));
+}
+var read = function(pointer, callback){
+    var reader = new FileReader();
+    reader.addEventListener('loadend', function(){
+        callback(new Uint8Array(reader.result));
+    });
+    reader.readAsArrayBuffer(pointer);
+}
+
+triggerClick = function(elt){
+    send(ProtocolHelpers.Physical.encode(elt.value));
+    return false;
+}
+triggerMessage = function(form){
+    send(ProtocolHelpers.Physical.getFrame(form.elements.stx.value));
+    return false;
+}
+
+</script>
+<style type="text/css">
+    div { border: 1px solid gray; width: 300px; float: left; margin: 10px; padding: 5px 10px; border-radius: 5px; }
+</style>
+</head>
+
+<body>
+
+<div>
+    <h1>New session</h1>
+    <form action="#" method="get">
+        <input
+            type="submit"
+            value="enq"
+            name="submit"
+            onclick="javascript: return triggerClick(this)"
+        />
+    </form>
+</div>
+<div>
+    <h1>Ack</h1>
+    <form action="#" method="get">
+        <input
+            type="submit"
+            value="ack"
+            name="submit"
+            onclick="javascript: return triggerClick(this)"
+        />
+    </form>
+</div>
+<div>
+    <h1>Nak</h1>
+    <form action="#" method="get">
+        <input
+            type="submit"
+            value="nak"
+            name="submit"
+            onclick="javascript: return triggerClick(this)"
+        />
+    </form>
+</div>
+<div>
+    <h1>End session</h1>
+    <form action="#" method="get">
+        <input
+            type="submit"
+            value="eot"
+            name="submit"
+            onclick="javascript: return triggerClick(this)"
+        />
+    </form>
+</div>
+<div>
+    <h1>New message</h1>
+    <form action="#" method="get" onsubmit="javascript: return triggerMessage(this)">
+        <input
+            type="text"
+            value=""
+            name="stx"
+        />
+    </form>
+</div>
+
+</body>
+</html>

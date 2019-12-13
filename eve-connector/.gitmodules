@@ -1,0 +1,3 @@
+[submodule "ept-emulator"]
+	path = ept-emulator
+	url = https://github.com/libre-informatique/EPTEmulator.git
