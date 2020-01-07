@@ -6,7 +6,7 @@ ShowLanguageDialog=no
 PrivilegesRequired=admin
 AppCopyright=Logick
 AppPublisher=Logick
-AppPublisherURL=http://logick.co
+AppPublisherURL=https://logick.co
 OutputBaseFilename=EveConnector-Setup-v5
 DisableWelcomePage=False
 UsePreviousSetupType=False
@@ -36,7 +36,7 @@ Name: "{app}\eve-connector"; Components: eveconnector
 
 [Files]
 ; Node.js installer
-Source: "node-v4.9.1-x64.msi"; DestDir: "{app}"; Flags: ignoreversion; Components: node; AfterInstall: InstallNode
+Source: "node-v12.14.0-x64.msi"; DestDir: "{app}"; Flags: ignoreversion; Components: node; AfterInstall: InstallNode
 ; EveConnector
 Source: "eve-connector\*"; DestDir: "{app}\eve-connector\"; Flags: ignoreversion recursesubdirs; Components: eveconnector
 Source: "eve-connector-win\node_modules\*"; DestDir: "{app}\eve-connector-win\node_modules\"; Flags: ignoreversion recursesubdirs; Components: eveconnector
@@ -209,7 +209,7 @@ begin
   Log('InstallNode() called');
   if aborted then exit;
 
-  installer := ExpandConstant('"{app}\node-v4.9.1-x64.msi"');
+  installer := ExpandConstant('"{app}\node-v12.14.0-x64.msi"');
   installMode := '/passive';
   showWindow := SW_SHOW;
   if WizardSilent then
@@ -239,7 +239,7 @@ var
 begin
   Log('UninstallNode() called');
 
-  installer := ExpandConstant('"{app}\node-v4.9.1-x64.msi"');
+  installer := ExpandConstant('"{app}\node-v12.14.0-x64.msi"');
   installMode := '/quiet';
   showWindow := SW_HIDE;
   res := ShellExec('runas', 'msiexec.exe',
