@@ -1,20 +1,20 @@
 [Setup]
 AppName=EveConnector
 AppVersion=1
-DefaultDirName={pf}\EveConnector
+DefaultDirName={commonpf}\EveConnector
 ShowLanguageDialog=no
 PrivilegesRequired=admin
 AppCopyright=Logick
 AppPublisher=Logick
 AppPublisherURL=https://logick.co
-OutputBaseFilename=EveConnector-Setup-v5
+OutputBaseFilename=EveConnector-Setup-v5.1
 DisableWelcomePage=False
 UsePreviousSetupType=False
 UsePreviousTasks=False
 FlatComponentsList=False
 AlwaysShowComponentsList=True
 ShowComponentSizes=False
-OutputDir=C:\EVE-CONNECTOR\Output
+OutputDir=bin
 DisableStartupPrompt=True
 ; When set to none, Setup will use the first language specified in the [Languages] section as the default language.
 LanguageDetectionMethod=none 
@@ -267,7 +267,7 @@ begin
     SW_HIDE, ewWaitUntilTerminated, errorCode);
   if not res then 
   begin
-    errorMessage := 'La configuration du service a échoué: ' + IntToStr(errorCode);
+    errorMessage := 'La configuration du service a échoué: ' + IntToStr(errorCode) + ' / ' + ExpandConstant('{app}\eve-connector-win');
     Log(errorMessage);
     aborted := True;
     exit;
