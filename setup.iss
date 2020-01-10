@@ -7,7 +7,7 @@ PrivilegesRequired=admin
 AppCopyright=Logick
 AppPublisher=Logick
 AppPublisherURL=https://logick.co
-OutputBaseFilename=EveConnector-Setup-v5.1
+OutputBaseFilename=EveConnector-Setup-v5.2
 DisableWelcomePage=False
 UsePreviousSetupType=False
 UsePreviousTasks=False
@@ -134,7 +134,7 @@ end;
 
 function NodeExe(): String;
 begin
-    Result := NodeDir() + '\node.exe';
+    Result := 'node';
 end;
 
 function NpmExe(): String;
