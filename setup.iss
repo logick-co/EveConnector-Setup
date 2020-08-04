@@ -134,7 +134,7 @@ end;
 
 function NodeExe(): String;
 begin
-    Result := 'node';
+    Result := NodeDir() + '\node.exe';
 end;
 
 function NpmExe(): String;
