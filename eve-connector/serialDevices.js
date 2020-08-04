@@ -1,7 +1,7 @@
 var exports = module.exports = {};
 
 var serialport = require('serialport');
-var SerialPort = serialport.SerialPort;
+var SerialPort = serialport;
 var parsers = serialport.parsers;
 var atob = require('atob');
 var btoa = require('btoa');
@@ -118,7 +118,7 @@ var sendData = function(device, data, socket)
         return when.promise(function(resolve, reject){
             debug('sending data to comName=' + comName);
             var port = new SerialPort(comName, {
-                baudrate: device.params.baudrate ? device.params.baudrate : 9600,
+                baudRate: device.params.baudrate ? device.params.baudrate : 9600,
                 //parser: serialport.parsers.byteLength(42), // TODO: this is specific to SCD122U
                 dataBits: device.params.databits ? device.params.databits : 8,
                 parity: device.params.parity ? device.params.parity : 'none',
@@ -127,7 +127,7 @@ var sendData = function(device, data, socket)
             var readAfterSend = device.params.readAfterSend;
 
             port.on('open', function() {
-                data = new Buffer(atob(data.toString()));
+                data = new Buffer(data.toString(), 'base64');
                 port.write(data, function(err) {
                     if (err) {
                       debug('Error on write: ', err.message);
@@ -170,7 +170,7 @@ var readData = function(device, length)
         return when.promise(function(resolve, reject){
             debug('reading data from comName=' + comName);
             var port = new SerialPort(comName, {
-                baudrate: device.params.baudrate ? device.params.baudrate : 9600,
+                baudRate: device.params.baudrate ? device.params.baudrate : 9600,
                 //parser: serialport.parsers.byteLength(42), // TODO: this is specific to SCD122U
                 dataBits: device.params.databits ? device.params.databits : 8,
                 parity: device.params.parity ? device.params.parity : 'none',
@@ -204,7 +204,7 @@ var doTransaction = function(device, data)
             debug('writes = ' + writes);
             debug('reads = ' + reads);
             var port = new SerialPort(comName, {
-                baudrate: device.params.baudrate ? device.params.baudrate : 9600,
+                baudRate: device.params.baudrate ? device.params.baudrate : 9600,
                 //parser: serialport.parsers.byteLength(42), // TODO: this is specific to SCD122U
                 dataBits: device.params.databits ? device.params.databits : 8,
                 parity: device.params.parity ? device.params.parity : 'none',
@@ -212,7 +212,7 @@ var doTransaction = function(device, data)
             }, false);
 
             var done = function() {
-                if ( port.isOpen() ) port.close();
+                if ( port.isOpen ) port.close();
                 // we send back base64 encoded data
                 resolve(result != undefined ? btoa(result) : '');
             }
@@ -224,7 +224,7 @@ var doTransaction = function(device, data)
                     port.write(data, function(err) {
                         if (err) {
                           debug('Error on write: ', err.message);
-                          if ( port.isOpen() ) port.close();
+                          if ( port.isOpen ) port.close();
                           reject(err);
                         }
                         debug('Message written: ' + data);
@@ -237,16 +237,20 @@ var doTransaction = function(device, data)
                 else if ( reads.length == 0 ) done();
             }
 
-            if ( port.isOpen() )
+            port.on('open', function() {
+                write();
+            });
+/*
+            if ( port.isOpen )
                 reject('Port is already open');
             else port.open(function(err){
                 if ( err ) {
-                    debug('serial port open Error: ', err.message);
+                    debug('serial port open Errooor: ', err.message);
                     reject(err);
                 }
                 else write();
             });
-
+*/
             port.on('data', function(data) {
                 debug('got data:' + data , data.toString().charCodeAt(0));
                 var found = false;
@@ -270,7 +274,7 @@ var doTransaction = function(device, data)
             // open errors will be emitted as an error event
             port.on('error', function(err) {
                 debug('serial port Error: ', err.message);
-                if ( port.isOpen() ) port.close();
+                if ( port.isOpen ) port.close();
                 reject(err);
             });
         });
