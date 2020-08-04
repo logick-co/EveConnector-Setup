@@ -127,7 +127,7 @@ var sendData = function(device, data, socket)
             var readAfterSend = device.params.readAfterSend;
 
             port.on('open', function() {
-                data = new Buffer(data.toString(), 'base64');
+                data = new Buffer(atob(data.toString()));
                 port.write(data, function(err) {
                     if (err) {
                       debug('Error on write: ', err.message);

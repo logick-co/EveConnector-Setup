@@ -77,20 +77,6 @@
 
     <hr>
 
-    <form class="serial device" id="epson-display">
-        <h3>Epson display</h3>
-        <p>(Serial / pnpId ~ VID_1208+PID_0780)</p>
-        <p class="not-available">Device is not available</p>
-        <input type="hidden" name="device-type" value="serial">
-        <input type="hidden" name="comName" placeholder="comName" value="">  <!-- test with "COM3" -->
-        <input type="hidden" name="pnpId" placeholder="pnpId" value="VID_1208+PID_0780">
-        <input type="hidden" name="baudrate" placeholder="baudrate" value="115200">
-        <button class="clear-device">Clear display</button>
-        <button class="send-data">Test display</button>
-    </form>
-
-    <hr>
-
     <form class="serial device" id="ingenico-ept">
         <h3>Ingenico EPT</h3>
         <p>
@@ -130,10 +116,7 @@
         directExecute = function() {
             var query = {
                 type: 'usb',
-                params: [
-                    {vid: 1305, pid:1},
-                    {vid: 2627, pid: 514}
-                ]
+                params: [{vid: 1305, pid:1}, {vid: 2627, pid: 514}]
             };
             eveconn.areDevicesAvailable(query).then(
                 function(res) {
@@ -147,15 +130,7 @@
                 },
                 function(err) { console.error("areDevicesAvailable() error:", err); }
             ).then(function(){
-                query = {
-                    type: 'serial',
-                    params: [
-                        {pnpId: 'VID_1208+PID_0780'},
-                        {pnpId: 'VID_0519+PID_0007'},
-                        {pnpId: 'VID_079B&PID_0028'},
-                        {pnpId: 'usb-079b_0028-if00'}
-                    ]
-                };
+                query = {type: 'serial', params: [{pnpId: 'VID_0519+PID_0007'},{pnpId: 'VID_079B&PID_0028'},{pnpId: 'usb-079b_0028-if00'}] };
                 eveconn.areDevicesAvailable(query).then(
                     function(res) {
                         $('form.serial.device').each(function(){
@@ -177,7 +152,7 @@
             var $form = $(this).closest('form');
             var id = $form.attr('id');
             var device = getDevice($form);
-            if ( id == 'star-display' || id == 'epson-display') {
+            if ( id == 'star-display') {
                 data = btoa(String.fromCharCode(12)); // Clear display code
                 sendData(device, data);
             }
@@ -188,21 +163,19 @@
             var $form = $(this).closest('form');
             var id = $form.attr('id');
             var device;
-            switch(id) {
-                case 'star-display':
-                case 'epson-display':
-                    device = getDevice($form);
-                    data = btoa(String.fromCharCode(12) + "Hello World...");
-                    sendData(device, data);
-                    break;
-                case 'ingenico-ept':
-                    ingenicoSendData();
-                    break;
-                default:
-                    device = getDevice($form);
-                    $.get( 'test_data/' + id + '_b64', function( response ) {
-                        sendData(device, response);
-                    });
+            if ( id == 'star-display') {
+                device = getDevice($form);
+                data = btoa( String.fromCharCode(12) + "Hello World...");
+                sendData(device, data);
+            }
+            if ( id == 'ingenico-ept') {
+                ingenicoSendData();
+            }
+            else { // printers
+                device = getDevice($form);
+                $.get( 'test_data/' + id + '_b64', function( response ) {
+                    sendData(device, response);
+                });
             }
             return false;
         };
