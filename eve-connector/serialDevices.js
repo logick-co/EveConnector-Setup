@@ -68,17 +68,15 @@ var areDevicesAvailable = function(type, devicesList)
     var checks = [];
     devicesList.forEach(function(device){
         var check = when.promise(function(resolve, reject){
-            serialport.list(function (err, ports) {
-                if (err)
-                    reject(err);
-                else {
+            try {
+                var list = serialport.list().then(ports => {
                     var comName = device.comName;
                     var pnpId = device.pnpId;
                     var found = ports.find(function(port){
-                        if (comName && pnpId && comName === port.comName && port.pnpId && port.pnpId.includes(pnpId)) {
+                        if (comName && pnpId && comName === port.path && port.pnpId && port.pnpId.includes(pnpId)) {
                             return true;
                         }
-                        if (comName && comName === port.comName) {
+                        if (comName && comName === port.path) {
                             return true;
                         }
                         if (pnpId && port.pnpId && port.pnpId.includes(pnpId)) {
@@ -89,10 +87,23 @@ var areDevicesAvailable = function(type, devicesList)
                     if (found) {
                         available.params.push(found);
                     }
-                    resolve(available);
-                }
-            });
+    
+                    return available;
+                }).catch(() => {
+                    return false
+                })
+            } catch(err) {
+                reject('Unknown error while listing devices')
+            }
+
+            if (list) {
+                resolve(list)
+            } else {
+                reject('Unknown error')
+            }
+
         });
+        
         checks.push(check);
     });
     return when.all(checks);
@@ -127,7 +138,8 @@ var sendData = function(device, data, socket)
             var readAfterSend = device.params.readAfterSend;
 
             port.on('open', function() {
-                data = new Buffer(data.toString(), 'base64');
+                data = new Buffer.from(data.toString(), 'base64');
+
                 port.write(data, function(err) {
                     if (err) {
                       debug('Error on write: ', err.message);
@@ -220,7 +232,7 @@ var doTransaction = function(device, data)
             var write = function() {
                 if ( writes.length > 0 ) {
                     var data = writes.shift();
-                    data = new Buffer(atob(data.toString()));
+                    data = new Buffer.from(atob(data.toString()));
                     port.write(data, function(err) {
                         if (err) {
                           debug('Error on write: ', err.message);
@@ -287,21 +299,28 @@ var doTransaction = function(device, data)
 var getComName = function(device)
 {
     return when.promise(function(resolve, reject) {
-        if (device.params.comName)
+        if (device.params.comName) {
             resolve(device.params.comName)
-
-        else serialport.list(function (err, ports) {
-            if (err)
-                reject(err.msg);
-            else {
-                var pnpId = device.params.pnpId;
-                var found = ports.find(function(port){
+        } else {
+            const pnpId = device.params.pnpId;
+            const path = serialport.list().then(ports => {
+                const found = ports.find(function(port) {
                     return pnpId && port.pnpId.includes(pnpId);
-                });
-                if (found) resolve(found.comName);
-                else reject('Device not found for pnpId ' + pnpId);
+                })
+
+                if (found) {
+                    return found.path
+                } 
+                    
+                return false
+            }).catch()
+
+            if (path) {
+                resolve(path)
+            } else {
+                reject(`Device not found for pnpId : ${pnpId}`)
             }
-        });
+        }
     });
 }
 
