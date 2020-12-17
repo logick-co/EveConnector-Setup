@@ -57,7 +57,7 @@ Name: "{group}\{cm:UninstallProgram, EveConnector}"; Filename: "{uninstallexe}"
 [Components]
 Name: "eveconnector"; Description: "EveConnector"; Types: compact custom full
 Name: "node"; Description: "Node.js et npm"; Types: full custom
-Name: "winusb"; Description: "Pilotes WinUSB pour les pï¿½riphï¿½riques"; Types: full custom
+Name: "winusb"; Description: "Pilotes WinUSB pour les périphériques"; Types: full custom
 Name: "winusb/printers"; Description: "Imprimantes"; Types: full custom
 Name: "winusb/printers/tsp700"; Description: "Star TSP700"; Types: full custom
 Name: "winusb/printers/boca"; Description: "Imprimante Boca"; Types: full custom
@@ -221,7 +221,7 @@ begin
     '/i ' + installer + ' INSTALLDIR="' + NodeDir() + '" ' + installMode, 
     '', showWindow, ewWaitUntilTerminated, errorCode);
   if not res then begin
-    errorMessage := 'L''installation de Node.js a ï¿½chouï¿½: ' + IntToStr(errorCode);
+    errorMessage := 'L''installation de Node.js a échoué: ' + IntToStr(errorCode);
     Log(errorMessage);
     aborted := True;
     exit;
@@ -246,7 +246,7 @@ begin
     '/x ' + installer + ' INSTALLDIR="' + NodeDir() + '" ' + installMode, 
     '', showWindow, ewWaitUntilTerminated, errorCode);
   if not res then begin
-    errorMessage := 'La dï¿½sinstallation de Node.js a ï¿½chouï¿½: ' + IntToStr(errorCode);
+    errorMessage := 'La dï¿½sinstallation de Node.js a échoué: ' + IntToStr(errorCode);
     Log(errorMessage);
   end;
 end;
@@ -267,7 +267,7 @@ begin
     SW_HIDE, ewWaitUntilTerminated, errorCode);
   if not res then 
   begin
-    errorMessage := 'La configuration du service a ï¿½chouï¿½: ' + IntToStr(errorCode) + ' / ' + ExpandConstant('{app}\eve-connector-win');
+    errorMessage := 'La configuration du service a échoué: ' + IntToStr(errorCode) + ' / ' + ExpandConstant('{app}\eve-connector-win');
     Log(errorMessage);
     aborted := True;
     exit;
