@@ -246,7 +246,7 @@ begin
     '/x ' + installer + ' INSTALLDIR="' + NodeDir() + '" ' + installMode, 
     '', showWindow, ewWaitUntilTerminated, errorCode);
   if not res then begin
-    errorMessage := 'La dï¿½sinstallation de Node.js a échoué: ' + IntToStr(errorCode);
+    errorMessage := 'La désinstallation de Node.js a échoué: ' + IntToStr(errorCode);
     Log(errorMessage);
   end;
 end;
