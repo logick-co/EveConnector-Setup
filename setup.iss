@@ -1,6 +1,6 @@
 [Setup]
 AppName=EveConnector
-AppVersion=1
+AppVersion=5.6
 DefaultDirName={commonpf}\EveConnector
 ShowLanguageDialog=no
 PrivilegesRequired=admin
