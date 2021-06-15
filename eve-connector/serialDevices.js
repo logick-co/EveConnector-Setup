@@ -269,9 +269,12 @@ var doTransaction = function(device, data)
                 if ( reads.length > 0 ) {
                     var next = atob(reads[0]);
                     debug('next:' + next , next.toString().charCodeAt(0));
+                    
                     if ( next == '*' ) {
-                        result = data;
-                        found = true;
+                        result += data;
+                        if (data.toString().charCodeAt(data.length - 2) == 3) {
+                            found = true;
+                        }
                     }
                     if ( next == data )
                         found = true;
@@ -281,6 +284,7 @@ var doTransaction = function(device, data)
                     write();
                 }
                 if ( reads.length == 0 && writes.length == 0 ) done();
+                port.resume()
             });
 
             // open errors will be emitted as an error event

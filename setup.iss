@@ -1,13 +1,13 @@
 [Setup]
 AppName=EveConnector
-AppVersion=5.6
+AppVersion=5.7
 DefaultDirName={commonpf}\EveConnector
 ShowLanguageDialog=no
 PrivilegesRequired=admin
 AppCopyright=Logick
 AppPublisher=Logick
 AppPublisherURL=https://logick.co
-OutputBaseFilename=EveConnector-Setup-v5.6
+OutputBaseFilename=EveConnector-Setup-v5.7
 DisableWelcomePage=False
 UsePreviousSetupType=False
 UsePreviousTasks=False
